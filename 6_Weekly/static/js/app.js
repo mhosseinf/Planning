@@ -249,16 +249,12 @@ function createCountryMap(data, selectedCountryName) {
 
 // Function to handle dropdown change event
 function dropdownChange(data, selectedCountryName) {
-    displayCountryInfo(data, selectedCountryName);
-    createpichartWithMostRecovered(data, selectedCountryName);
-    createBarchartMostDeaths(data,selectedCountryName);
-    createlinechartGDP(data,selectedCountryName);
-    createCovidVaccineDoses(data,selectedCountryName);
-    createCountryMap(data,selectedCountryName);
+    displaytwomonthsinfo(data, initialFieldTeamName);
+    // displaysixweeksinfo(data, initialFieldTeamName);
 }
 
 // Function to display country info
-function displayCountryInfo(data, selectedCountryName) {
+function displaytwomonthsinfo(data, selectedCountryName) {
     // Find the selected country data using the provided country name
     let countryInfo = data[selectedCountryName];
     // console.log(countryInfo);
@@ -274,6 +270,40 @@ function displayCountryInfo(data, selectedCountryName) {
     
 }
 
+// Helper function to get the Monday of the current week
+function getMonday(date) {
+    date = new Date(date);
+    let day = date.getDay(),
+        diff = date.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(date.setDate(diff));
+}
+
+// Populate third dropdown based on the selection from the first dropdown
+function populateThirdDropdown(option) {
+    let thirdDropdown = d3.select("#selThirdDropdown");
+    thirdDropdown.html(''); // Clear existing options
+
+    if (option === "6 weeks") {
+        let startDate = getMonday(new Date());
+        for (let i = 0; i < 6; i++) {
+            let mondayDate = new Date(startDate);
+            mondayDate.setDate(startDate.getDate() + i * 7);
+            let formattedDate = mondayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+            let option = thirdDropdown.append("option");
+            option.property("value", formattedDate);
+            option.text(formattedDate);
+        }
+    } else if (option === "2 months") {
+        let currentDate = new Date();
+        for (let i = 0; i < 2; i++) {
+            let date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
+            let formattedDate = date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+            let option = thirdDropdown.append("option");
+            option.property("value", formattedDate);
+            option.text(formattedDate);
+        }
+    }
+}
 
 // Initialize the page
 function init() {
@@ -283,7 +313,7 @@ function init() {
 
         // Select the first dropdown element and populate it with "6 weeks" and "2 months"
         let firstDropdown = d3.select("#selFirstDropdown");
-        ["6 weeks", "2 months"].forEach(optionText => {
+        ["2 months", "6 weeks"].forEach(optionText => {
             let option = firstDropdown.append("option");
             option.property("value", optionText);
             option.text(optionText);
@@ -300,7 +330,13 @@ function init() {
             option.text(teamName);
         });
 
-        // Define event for dropdown change and call the dropdownChange function
+        // Define event for 6 weeks/2 months dropdown change and call the populateThirdDropdown function
+        firstDropdown.on("change", function () {
+            let selectedOption = firstDropdown.property("value");
+            populateThirdDropdown(selectedOption);
+        });
+
+        // Define event for field team dropdown change and call the dropdownChange function
         secondDropdown.on("change", function () {
             // Get the selected field team name
             let selectedFieldTeamName = secondDropdown.property("value");
@@ -309,14 +345,11 @@ function init() {
 
         // Create the initial data and visualizations
         let initialFieldTeamName = fieldTeamNames[0];
-        twomonths(data, initialFieldTeamName);
-        createpichartWithMostRecovered(data, initialFieldTeamName);
-        createBarchartMostDeaths(data, initialFieldTeamName);
-        createlinechartGDP(data, initialFieldTeamName);
-        createCovidVaccineDoses(data, initialFieldTeamName);
-        createCountryMap(data, initialFieldTeamName);
+        displaytwomonthsinfo(data, initialFieldTeamName);
+        populateThirdDropdown("2 months")
+        // displaysixweeksinfo(data, initialFieldTeamName);
     });
 }
 
-// Call the initialisation function
+// Call the initialization function
 init();
