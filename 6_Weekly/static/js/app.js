@@ -1,5 +1,5 @@
 // Define the URL to fetch the data
-let url = "http://127.0.0.1:5000/api/v1.0/allcountries";
+let url = "http://127.0.0.1:5000/api/v1.0/team_monthly_plans";
 
 const countryProfileMapping = {
     booster_doses_per_100people: "Booster doses per 100 people",
@@ -279,35 +279,42 @@ function displayCountryInfo(data, selectedCountryName) {
 function init() {
     // Fetch the JSON data from the above URL
     d3.json(url).then(data => {
-        // console.log("Fetched JSON data:", data);
-        countryNames=data.names;
-        
-        // Select the dropdown element
-        let cdrdownn = d3.select("#selDataset");
+        console.log("Fetched JSON data:", data);
 
-        // Populate the dropdown options with country names
-        for (let i = 0; i < countryNames.length; i++) {
-            let countryName = countryNames[i];
-            let option = cdrdownn.append("option");
-            option.property("value", countryName);
-            option.text(countryName);
-        }
+        // Select the first dropdown element and populate it with "6 weeks" and "2 months"
+        let firstDropdown = d3.select("#selFirstDropdown");
+        ["6 weeks", "2 months"].forEach(optionText => {
+            let option = firstDropdown.append("option");
+            option.property("value", optionText);
+            option.text(optionText);
+        });
+
+        // Extract the field team names from the data
+        let fieldTeamNames = Object.keys(data);
+
+        // Select the second dropdown element and populate it with field team names
+        let secondDropdown = d3.select("#selFieldTeamDropdown");
+        fieldTeamNames.forEach(teamName => {
+            let option = secondDropdown.append("option");
+            option.property("value", teamName);
+            option.text(teamName);
+        });
 
         // Define event for dropdown change and call the dropdownChange function
-        cdrdownn.on("change", function () {
-            // Get the selected country value
-            let selectedCountryName = cdrdownn.property("value");
-            dropdownChange(data, selectedCountryName);
+        secondDropdown.on("change", function () {
+            // Get the selected field team name
+            let selectedFieldTeamName = secondDropdown.property("value");
+            dropdownChange(data, selectedFieldTeamName);
         });
 
         // Create the initial data and visualizations
-        let initialCountryName = Object.keys(data)[0];
-        displayCountryInfo(data, initialCountryName);
-        createpichartWithMostRecovered(data, initialCountryName);
-        createBarchartMostDeaths(data, initialCountryName);
-        createlinechartGDP(data, initialCountryName);
-        createCovidVaccineDoses(data, initialCountryName)
-        createCountryMap(data, initialCountryName);
+        let initialFieldTeamName = fieldTeamNames[0];
+        twomonths(data, initialFieldTeamName);
+        createpichartWithMostRecovered(data, initialFieldTeamName);
+        createBarchartMostDeaths(data, initialFieldTeamName);
+        createlinechartGDP(data, initialFieldTeamName);
+        createCovidVaccineDoses(data, initialFieldTeamName);
+        createCountryMap(data, initialFieldTeamName);
     });
 }
 

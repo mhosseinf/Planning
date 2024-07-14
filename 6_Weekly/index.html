@@ -14,23 +14,30 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12 jumbotron text-center">
-        <h1>Country readiness and global implication of Covid-19 Pandemic</h1>
-        <p>Use the interactive charts below to explore the dataset</p>
+        <h1>AMSI 6 weeks/ 2 months planning Tools</h1>
+        <p>Use the interactive tables below to explore the each team</p>
       </div>
     </div>
     <div class="row">
       <div class="col-md-4">
-        <div class="well">
-          <h5>Country Name:</h5>
-          <select id="selDataset"></select>
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">6 Weeks/ 2 Months</h3>
+          </div>
+          <div class="panel-body">
+            <select id="selFirstDropdown"></select>
+          </div>
         </div>
         <div class="panel panel-primary">
           <div class="panel-heading">
-            <h3 class="panel-title">Country Info</h3>
+            <h3 class="panel-title">Field Team Names</h3>
           </div>
-          <div id="sample-metadata" class="panel-body"></div>
+          <div class="panel-body">
+            <select id="selFieldTeamDropdown"></select>
+          </div>
         </div>
       </div>
+    </div>
       <div class="col-md-8">
         <div id="map" style="height: 700px;"></div>
       </div>
