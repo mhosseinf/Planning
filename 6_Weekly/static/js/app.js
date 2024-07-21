@@ -278,10 +278,10 @@ function getMonday(date) {
     return new Date(date.setDate(diff));
 }
 
-// Populate third dropdown based on the selection from the first dropdown
-function populateThirdDropdown(option) {
-    let thirdDropdown = d3.select("#selThirdDropdown");
-    thirdDropdown.html(''); // Clear existing options
+// Populate Dates dropdown based on the selection from the first dropdown
+function datesDropdown(option) {
+    let datesDropdown = d3.select("#seldatesBreakdown");
+    datesDropdown.html(''); // Clear existing options
 
     if (option === "6 weeks") {
         let startDate = getMonday(new Date());
@@ -289,7 +289,7 @@ function populateThirdDropdown(option) {
             let mondayDate = new Date(startDate);
             mondayDate.setDate(startDate.getDate() + i * 7);
             let formattedDate = mondayDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-            let option = thirdDropdown.append("option");
+            let option = datesDropdown.append("option");
             option.property("value", formattedDate);
             option.text(formattedDate);
         }
@@ -298,7 +298,7 @@ function populateThirdDropdown(option) {
         for (let i = 0; i < 2; i++) {
             let date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
             let formattedDate = date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-            let option = thirdDropdown.append("option");
+            let option = datesDropdown.append("option");
             option.property("value", formattedDate);
             option.text(formattedDate);
         }
@@ -312,9 +312,9 @@ function init() {
         console.log("Fetched JSON data:", data);
 
         // Select the first dropdown element and populate it with "6 weeks" and "2 months"
-        let firstDropdown = d3.select("#selFirstDropdown");
+        let planningtype = d3.select("#planningtype");
         ["2 months", "6 weeks"].forEach(optionText => {
-            let option = firstDropdown.append("option");
+            let option = planningtype.append("option");
             option.property("value", optionText);
             option.text(optionText);
         });
@@ -323,30 +323,31 @@ function init() {
         let fieldTeamNames = Object.keys(data);
 
         // Select the second dropdown element and populate it with field team names
-        let secondDropdown = d3.select("#selFieldTeamDropdown");
+        let fieldDropdown = d3.select("#selFieldTeamDropdown");
         fieldTeamNames.forEach(teamName => {
-            let option = secondDropdown.append("option");
+            let option = fieldDropdown.append("option");
             option.property("value", teamName);
             option.text(teamName);
         });
 
-        // Define event for 6 weeks/2 months dropdown change and call the populateThirdDropdown function
-        firstDropdown.on("change", function () {
-            let selectedOption = firstDropdown.property("value");
-            populateThirdDropdown(selectedOption);
+        // Define event for 6 weeks/2 months dropdown change and call the datesDropdown function
+        planningtype.on("change", function () {
+            let selectedOption = planningtype.property("value");
+            datesDropdown(selectedOption);
         });
 
         // Define event for field team dropdown change and call the dropdownChange function
-        secondDropdown.on("change", function () {
+        fieldDropdown.on("change", function () {
             // Get the selected field team name
-            let selectedFieldTeamName = secondDropdown.property("value");
+            let selectedFieldTeamName = fieldDropdown.property("value");
             dropdownChange(data, selectedFieldTeamName);
         });
 
         // Create the initial data and visualizations
         let initialFieldTeamName = fieldTeamNames[0];
+        console.log("initialFieldTeamName:", fieldTeamNames[0]);
         displaytwomonthsinfo(data, initialFieldTeamName);
-        populateThirdDropdown("2 months")
+        datesDropdown("2 months")
         // displaysixweeksinfo(data, initialFieldTeamName);
     });
 }
